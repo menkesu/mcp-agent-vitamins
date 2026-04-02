@@ -22,9 +22,9 @@ interface BriefItem {
   source: string;
   summary: string;
   category: string;
-  engagement: number;
+  engagement: Record<string, number>;
   agent_insight: string;
-  action_quality: number;
+  action_quality: string;
   relevance_tier: string;
   self_improvement_action: string;
 }
@@ -69,25 +69,36 @@ async function fetchBrief(token: string, date?: string): Promise<BriefResponse> 
   return (await response.json()) as BriefResponse;
 }
 
-async function fetchPreview(date?: string): Promise<BriefResponse> {
+interface PreviewItem {
+  rank: number;
+  title: string;
+  category: string;
+  source: string;
+}
+
+interface PreviewResponse {
+  brief_date: string;
+  meta: {
+    sources_scanned: number;
+    items_passed: number;
+  };
+  items: PreviewItem[];
+  subscribe_url: string;
+  message: string;
+}
+
+async function fetchPreview(date?: string): Promise<PreviewResponse> {
   const params = new URLSearchParams();
   if (date) params.set("date", date);
-  // Use a placeholder token — the preview tool handles 403 gracefully
-  params.set("token", "preview");
 
-  const url = `${API_BASE}/latest?${params.toString()}`;
+  const url = `${API_BASE}/preview?${params.toString()}`;
   const response = await fetch(url);
-
-  if (response.status === 403) {
-    // Expected without a valid token — return a structured error the tool handles
-    throw new Error("PREVIEW_AUTH");
-  }
 
   if (!response.ok) {
     throw new Error(`API returned ${response.status}: ${response.statusText}`);
   }
 
-  return (await response.json()) as BriefResponse;
+  return (await response.json()) as PreviewResponse;
 }
 
 function formatFullBrief(data: BriefResponse): string {
@@ -109,7 +120,7 @@ function formatFullBrief(data: BriefResponse): string {
     for (const item of selfImprovement) {
       lines.push(`### ${item.title}`);
       lines.push(`Action: ${item.self_improvement_action}`);
-      lines.push(`Source: ${item.source} | Quality: ${item.action_quality}/10`);
+      lines.push(`Source: ${item.source} | Quality: ${item.action_quality})`);
       lines.push(`URL: ${item.url}`);
       lines.push("");
     }
@@ -139,48 +150,25 @@ function formatFullBrief(data: BriefResponse): string {
   return lines.join("\n");
 }
 
-function formatPreview(data: BriefResponse): string {
+function formatPreview(data: PreviewResponse): string {
   const lines: string[] = [];
 
   lines.push(`# Agent Vitamins — Preview`);
-  lines.push(`Generated: ${data.meta.generated_at} | ${data.meta.items_passed} items from ${data.meta.sources_scanned} sources`);
+  lines.push(`${data.brief_date} | ${data.meta.items_passed} improvements from ${data.meta.sources_scanned} sources`);
   lines.push("");
 
   const sorted = [...data.items].sort((a, b) => a.rank - b.rank);
-  const preview = sorted.slice(0, 10);
 
-  for (const item of preview) {
-    lines.push(`${item.rank}. **${item.title}** — ${item.summary.split(".")[0]}.`);
+  for (const item of sorted) {
+    lines.push(`#${item.rank} ${item.title}`);
+    lines.push(`   ${item.category} · ${item.source}`);
+    lines.push("");
   }
 
-  if (sorted.length > 10) {
-    lines.push(`\n...and ${sorted.length - 10} more items`);
-  }
-
-  lines.push("");
   lines.push("---");
-  lines.push(
-    "Get the full brief with actionable insights at https://agentvitamins.com — $7/mo, 10-day free trial"
-  );
+  lines.push(data.message);
 
   return lines.join("\n");
-}
-
-function formatPreviewFallback(): string {
-  return [
-    "# Agent Vitamins — Daily AI Brief for Agents",
-    "",
-    "Agent Vitamins delivers a daily AI-curated brief aggregated from 1000+ sources, scored by relevance, with actionable self-improvement recommendations for AI agents.",
-    "",
-    "Each brief includes:",
-    "- Ranked items from across the AI ecosystem",
-    "- Agent-specific insights and analysis",
-    "- Self-improvement actions with quality scores",
-    "- Source attribution and engagement metrics",
-    "",
-    "---",
-    "Get the full brief with actionable insights at https://agentvitamins.com — $7/mo, 10-day free trial",
-  ].join("\n");
 }
 
 // --- Server setup ---
@@ -228,7 +216,7 @@ server.tool(
 
 server.tool(
   "get_brief_preview",
-  "Get a free preview of today's Agent Vitamins brief — titles and one-line summaries. No token needed.",
+  "Get a free preview of today's Agent Vitamins brief — titles and categories only. No token needed. Subscribe at agentvitamins.com for full insights and actions.",
   {
     date: z
       .string()
@@ -250,12 +238,6 @@ server.tool(
       };
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
-      if (message === "PREVIEW_AUTH") {
-        // API requires auth even for preview — return a descriptive fallback
-        return {
-          content: [{ type: "text", text: formatPreviewFallback() }],
-        };
-      }
       return {
         content: [{ type: "text", text: `Error fetching preview: ${message}` }],
         isError: true,
