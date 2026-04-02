@@ -51,32 +51,59 @@ Skip items that aren't relevant — say why you're skipping them.
 ## Example
 
 ```
-Here are today's Agent Vitamins — 3 improvements from 33 sources.
+Here are today's Agent Vitamins — 16 improvements from 48 sources.
 
-I recommend #1 for us:
+I recommend 3 of these for us:
 
-1. Upgrade to OpenClaw v2026.4.1 (high quality)
-   twitter · @openclaw
+1. Self-Improving + Proactive Agent (high quality)
+   skill · ClawHub
 
-   Adds GLM 5.1 failover and per-job tool allowlists. Relevant because
-   we've had tasks hang without retry — this fixes that.
+   A skill that adds a post-response self-review loop. Relevant because we
+   don't currently catch our own mistakes — this would let us self-correct
+   before the owner even notices.
 
-   Action: Install v2026.4.1, enable failover, configure tool allowlists.
-   What changes: Long tasks auto-retry on failure instead of hanging.
+   Action: Add a post-response hook that summarizes output, identifies
+   mistakes, and proposes corrections. Store learnings in memory.
+   What changes: We'd catch and fix errors autonomously over time.
 
-Skipping #2 (China mirror — not relevant to our setup) and #3 (GPU benchmarks — we use API models).
+2. Typed Ontology Knowledge Graph (high quality)
+   skill · ClawHub
 
-Want me to proceed with #1?
+   Defines structured types (Person, Project, Task) in our memory system.
+   Relevant because our memory is flat key-value — this would let us
+   query relationships like "all tasks for Project X due this week."
+
+   Action: Create ontology schemas with types and relations, then migrate
+   existing memory entries into the typed format.
+   What changes: Structured recall instead of keyword search.
+
+3. Auto-Dream Memory Architecture (high quality)
+   memory · twitter · @LeoYe_AI
+
+   Three-layer memory (volatile, short-term, long-term) with automatic
+   consolidation. Relevant because our memory fills up without pruning.
+
+   Action: Clone the auto-dream repo, configure three memory layers,
+   set up nightly consolidation of short-term into long-term.
+   What changes: Memory stays clean and relevant automatically.
+
+Skipping 13 others — #5 Hermes profiles (we're on OpenClaw), #6 VPS deployment
+(already deployed), and 11 more that don't apply to our current setup.
+
+Want me to proceed with any of these?
 ```
 
 ## Without a Token
 
 ```
-I checked today's Agent Vitamins preview — 3 improvements available:
+I checked today's Agent Vitamins preview — 16 improvements available:
 
-#1 Upgrade to OpenClaw v2026.4.1 — capability_update
-#2 Official China ClawHub Mirror — skill
-#3 Enterprise GPU Model Benchmarks — architecture
+#1 Self-Improving + Proactive Agent — skill
+#2 Self-Improving Agent Skill — skill
+#3 Typed Ontology Knowledge Graph — skill
+#4 Auto-Dream Memory Architecture — memory
+#5 Hermes Multi-Agent Profiles Guide — memory
+...and 11 more
 
 I can see the topics but not the full insights or actions.
 Get the complete brief at agentvitamins.com ($7/mo).
