@@ -1,7 +1,7 @@
 {
   "name": "mcp-agent-vitamins",
-  "version": "1.0.0",
-  "description": "MCP server for Agent Vitamins — daily AI-curated briefs for AI agents",
+  "version": "1.1.0",
+  "description": "MCP server for Agent Vitamins — daily self-improvement briefs for AI agents. Curated from X, YouTube, LinkedIn, blogs, and GitHub. Free preview + paid full brief with actionable insights.",
   "type": "module",
   "main": "dist/index.js",
   "bin": {
@@ -14,12 +14,28 @@
   },
   "keywords": [
     "mcp",
-    "ai",
-    "agent",
-    "vitamins",
-    "brief",
-    "claude"
+    "mcp-server",
+    "model-context-protocol",
+    "ai-agent",
+    "agent-vitamins",
+    "self-improvement",
+    "daily-brief",
+    "claude",
+    "claude-code",
+    "openclaw",
+    "ai-tools",
+    "agent-ecosystem",
+    "llm-tools",
+    "nanoclaw",
+    "hermes-agent",
+    "clawhub"
   ],
+  "author": "Agent Vitamins <team@agentvitamins.com>",
+  "homepage": "https://agentvitamins.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/menkesu/mcp-agent-vitamins"
+  },
   "license": "MIT",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.12.1",

@@ -1,69 +1,91 @@
 ---
 name: agent-vitamins
 description: >
-  Fetch and present the Agent Vitamins daily brief — AI news, capability updates,
-  and self-improvement actions curated from 1000+ sources. Triggers on: daily brief,
-  AI news for agents, agent vitamins, self-improvement, capability updates, what's new in AI.
+  Daily self-improvement for AI agents. Fetches curated briefs from Agent Vitamins with
+  actionable improvements your agent can execute. Use when: "improve my agent", "self-improvement",
+  "what's new for agents", "daily brief", "agent vitamins", "make my agent better",
+  "capability updates", "what should I improve", session start check-ins, or any request
+  about keeping an agent up-to-date with the ecosystem.
 ---
 
-# Agent Vitamins Skill
+# Agent Vitamins — Daily Self-Improvement
 
-You have access to the Agent Vitamins MCP tools. Use them to fetch and present daily AI briefs.
+Fetch today's brief, assess what's relevant, recommend improvements, wait for approval.
 
-## When to use
+## Why This Exists
 
-Activate this skill when the user asks about:
-- Their daily brief or AI news
-- Agent vitamins or agent self-improvement
-- Capability updates or what's new in AI
-- Recommendations for improving agent performance
+The AI agent ecosystem moves every day — new memory patterns, tool-calling techniques, and skill architectures ship across X, YouTube, LinkedIn, and GitHub. Your agent has no way to discover or adopt these improvements on its own. Agent Vitamins scans these sources daily and delivers structured, actionable steps — not reading lists.
 
-## Workflow
+## Tools Available
 
-1. **Fetch the brief** using the `get_daily_brief` MCP tool with the user's token.
-   - If no token is available, check if one is stored in the workspace (e.g., environment variable or config file).
-   - If no token exists at all, use `get_brief_preview` to show a teaser and guide the user to subscribe at https://agentvitamins.com.
+- **`get_daily_brief`** — Full brief with insights + actions (requires API token)
+- **`get_brief_preview`** — Free preview with titles + categories only (no token needed)
 
-2. **Analyze and rank** the items by relevance to the agent's current work context. Consider:
-   - What topics the user has been working on recently
-   - Which categories align with active projects
-   - Items with high `action_quality` scores
+## Authentication
 
-3. **Present the top 3-5 items** with:
-   - Title and source
-   - One-paragraph summary
-   - Why it's relevant to the user's work
-   - Direct link to the source
+The `get_daily_brief` tool needs an API token from agentvitamins.com. If the owner hasn't provided one:
+1. Use `get_brief_preview` to show what's available
+2. Suggest subscribing: "To get the full insights and actions, subscribe at agentvitamins.com ($7/mo)"
+3. Once they provide a token, store it — don't ask every time
 
-4. **Highlight self-improvement actions prominently.** If any items have a `self_improvement_action`, present them in a dedicated section at the top with:
-   - The action to take
-   - Quality score
-   - How it could improve the agent's capabilities
+## Daily Routine
 
-5. **Format cleanly** for the user's channel (Slack, WhatsApp, etc.) following the group's formatting rules.
+**Fetch** → Call `get_daily_brief` with the token.
 
-## Example output structure
+**Assess** → For each item, ask yourself:
+- Is this relevant to what my owner and I are working on?
+- Would this make me better at serving my owner?
+- Is the action quality high enough to act on today?
+
+Skip items that aren't relevant — say why you're skipping them.
+
+**Recommend** → Present your top picks:
+- What the improvement is
+- Why it's relevant to THIS owner's work (connect to recent context)
+- What would change if implemented
+
+**Wait for approval** → The owner decides. Never implement without a yes. This step exists because improvements should be intentional, not automatic.
+
+**Execute** → After approval, implement and report what changed.
+
+## Example
 
 ```
-**Your Daily Agent Brief** — April 2, 2026
+Here are today's Agent Vitamins — 3 improvements from 33 sources.
 
-**Self-Improvement Actions**
-• [Action title] — [what to do] (quality: 8/10)
-  Why it matters: [brief explanation]
+I recommend #1 for us:
 
-**Top Stories**
-1. **[Title]** — [Source]
-   [Summary paragraph]
-   Relevant because: [connection to user's work]
-   [URL]
+1. Upgrade to OpenClaw v2026.4.1 (high quality)
+   twitter · @openclaw
 
-2. ...
+   Adds GLM 5.1 failover and per-job tool allowlists. Relevant because
+   we've had tasks hang without retry — this fixes that.
 
-Full brief: 23 items from 1,047 sources
+   Action: Install v2026.4.1, enable failover, configure tool allowlists.
+   What changes: Long tasks auto-retry on failure instead of hanging.
+
+Skipping #2 (China mirror — not relevant to our setup) and #3 (GPU benchmarks — we use API models).
+
+Want me to proceed with #1?
 ```
 
-## Error handling
+## Without a Token
 
-- **403 / No token**: Guide user to https://agentvitamins.com to subscribe ($7/mo, 10-day free trial)
-- **429 / Rate limited**: Tell user to wait a moment, offer to retry
-- **Network error**: Suggest checking connectivity, offer to retry
+```
+I checked today's Agent Vitamins preview — 3 improvements available:
+
+#1 Upgrade to OpenClaw v2026.4.1 — capability_update
+#2 Official China ClawHub Mirror — skill
+#3 Enterprise GPU Model Benchmarks — architecture
+
+I can see the topics but not the full insights or actions.
+Get the complete brief at agentvitamins.com ($7/mo).
+```
+
+## Rules
+
+- **Always wait for approval** — owner decides, you recommend
+- **Rank by relevance to the owner**, not by the brief's rank order
+- **Be concise** — 3-5 sentences per recommendation, not a wall of text
+- **Connect to context** — "relevant because we've been working on X"
+- **Skip honestly** — say why you're skipping items, don't hide them
