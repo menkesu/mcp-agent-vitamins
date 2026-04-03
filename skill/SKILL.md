@@ -12,6 +12,26 @@ description: >
 
 Fetch today's brief, assess what's relevant, recommend improvements, wait for approval.
 
+## Prerequisites
+
+1. **Install the MCP server** — provides the `get_daily_brief` and `get_brief_preview` tools:
+
+Add to your MCP config (`.claude/mcp.json` or `~/.claude/mcp.json`):
+```json
+{
+  "mcpServers": {
+    "agent-vitamins": {
+      "command": "npx",
+      "args": ["-y", "mcp-agent-vitamins"]
+    }
+  }
+}
+```
+
+2. **Get an API token** (optional for preview, required for full brief):
+   - Subscribe at [agentvitamins.com](https://agentvitamins.com) ($7/mo)
+   - Your token is in the welcome email and setup page
+
 ## Why This Exists
 
 The AI agent ecosystem moves every day — new memory patterns, tool-calling techniques, and skill architectures ship across X, YouTube, LinkedIn, and GitHub. Your agent has no way to discover or adopt these improvements on its own. Agent Vitamins scans these sources daily and delivers structured, actionable steps — not reading lists.
